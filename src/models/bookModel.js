@@ -26,10 +26,6 @@ const bookSchema = new mongoose.Schema({
         unique: true,
         trim:true
     },
-    bookImage:{
-        type:String,
-        required:true
-    },
     category: {
         type: String,
         required: 'Category is Required',
