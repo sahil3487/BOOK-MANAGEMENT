@@ -7,6 +7,10 @@ const jwt = require("jsonwebtoken")
 const isvalid = function (title) {
     return ["Mr", "Mrs", "Miss"].indexOf(title) === -1
 }
+const keyValue = (value) => {
+    if (Object.keys(value).length === 0) return false;
+    return true;
+  };
 
 // ==+==+==+==+===+==+==+==[ Create User ]==+==+==+==+===+==+==+==+=
 
@@ -45,9 +49,10 @@ const createUser = async (req, res) => {
         let street = address.street
         let city = address.city
         let pincode = address.pincode
+        console.log(street,city,pincode)
         if(street){
             let validateStreet = /^[a-zA-Z0-9]/
-            if (!validateStreet.test.trim(street)) {
+            if (!validateStreet.test(street)) {
                 return res.status(400).send({ status: false, message: "enter valid street name" })
             }
         }
