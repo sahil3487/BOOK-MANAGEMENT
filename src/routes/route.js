@@ -18,9 +18,6 @@ router.put("/books/:bookId",middleware.authenticate, bookController.updateBook)
 router.delete("/books/:bookId",middleware.authenticate, bookController.deleteBook)
 
 //---------------[Reviews APIs]
-
-// router.post("/books/:bookId/review",middleware.authenticate, reviewController.createReviews)
-
 router.post("/books/:bookId/review",reviewController.createReview)
 
 module.exports = router
