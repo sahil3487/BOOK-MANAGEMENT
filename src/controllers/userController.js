@@ -7,10 +7,6 @@ const jwt = require("jsonwebtoken")
 const isvalid = function (title) {
     return ["Mr", "Mrs", "Miss"].indexOf(title) === -1
 }
-const keyValue = (value) => {
-    if (Object.keys(value).length === 0) return false;
-    return true;
-  };
 
 // ==+==+==+==+===+==+==+==[ Create User ]==+==+==+==+===+==+==+==+=
 
