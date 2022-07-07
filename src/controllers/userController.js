@@ -2,11 +2,13 @@
 
 const userModel = require('../models/userModel')
 const jwt = require("jsonwebtoken")
+const { response } = require('express')
 
 //=================[Validation Function]==============
 const isvalid = function (title) {
     return ["Mr", "Mrs", "Miss"].indexOf(title) === -1
 }
+
 
 // ==+==+==+==+===+==+==+==[ Create User ]==+==+==+==+===+==+==+==+=
 
@@ -26,10 +28,10 @@ const createUser = async (req, res) => {
         //----------[Check Validations]
         if (isvalid(title)) return res.status(400).send({ status: false, message: "title must be Mr , Miss , Mrs" })
         //---(Name)
-        if (!(/^[A-Za-z_ ]+$/.test(name))) return res.status(400).send({ status: false, message: "Name is Invalid " })
-        if(typeof name!= "string") return res.status(400).send({status:false, message:"Name should be string"})
+        if(typeof name !== "string") return res.status(400).send({ status: false, message: "Name is Invalid" })
+        if (!(/^[A-Za-z_ ]+$/.test(name))) return res.status(400).send({ status: false, message: "Name is Invalid" })
         //---(Phone)
-        if (!(/^(\+\d{1,3}[- ]?)?\d{10}$/.test(phone))) return res.status(400).send({ status: false, message: "Phone Number Is Invalid" })
+        if (!(/^[6-9]\d{9}$/.test(phone))) return res.status(400).send({ status: false, message: "Phone Number Is Invalid" })
         //---(Email)
         if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) return res.status(400).send({ status: false, message: `Email should be a valid email address` });
         //---(Password)
