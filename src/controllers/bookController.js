@@ -22,7 +22,7 @@ const createBook = async (req, res) => {
 
         let checkTitle = await bookModel.findOne({ title })
         if (checkTitle) return res.status(400).send({ status: false, message: "Title is already used" })
-        if (!(/^[a-zA-Z0-9][a-zA-Z0-9\s\-,?_.]+$/.test(data.title))) return res.status(400).send({ status: false, message: "Please enter valid title" })
+        if (!(/^[a-zA-Z0-9][a-zA-Z0-9\s\-,?_.]+$/.test(title))) return res.status(400).send({ status: false, message: "Please enter valid title" })
 
         let checkUserid = await userModel.findById(userId)
         if (!mongoose.Types.ObjectId.isValid(checkUserid)) return res.status(400).send({ status: false, message: "Invalid UserId" })
