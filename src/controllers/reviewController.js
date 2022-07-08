@@ -1,37 +1,52 @@
-// const bookModel = require('../models/bookModel')
-// const reviewModel = require('../models/reviewModel')
-// const { default: mongoose } = require('mongoose')
+const mongoose = require('mongoose')
+const bookModel = require("../models/bookModel");
+const reviewModel = require("../models/reviewModel");
 
+let createReview = async (req, res) => {
+    try {
+        let data = req.body;
+        if (Object.keys(data).length == 0) return res.status(400).send({ status: false, msg: 'please eneter data to create review' })
 
-// const createReviews = async (req, res) => {
-//     const id = req.params.bookId;
-//     const data = req.body
-//     id.isdeleted = false
-//     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).send({ status: false, message: 'Invalid UserId Format' })
-//     if (Object.keys(data).length === 0) return res.status(400).send({ status: false, message: "Please Provide data to create review." })
+        let bookId = req.params.bookId;
+        if (!mongoose.Types.ObjectId.isValid(bookId)) return res.status(400).send({ status: false, msg: 'please enter the bookId' });
 
-//     const findBook = await bookModel.findById(id);
-//     if(!findBook) return res.status(404).send({ status: false, message: 'Book not found' })
+        let findBook = await bookModel.findOne({ _id: bookId, isDeleted: false });
+        if (!findBook) return res.status(404).send({ status: false, msg: 'bookId does not exists' })
 
-//     let {reviewedBy, rating, review, bookId, reviewdAt} = data
+        let { reviewedBy, reviewedAt, rating, review } = data;
 
-//     if(!reviewedBy) return res.status(400).send({ status: false, message: "Please Provide reviewers name" })
-//     if(!rating) return res.status(400).send({ status: false, message: "Please give ratings" })
+        let filter = { isDeleted: false };
 
-//     // let update = await bookModel.findByIdAndUpdate({reviews:})
-//     let create = await reviewModel.create({reviewedBy, rating, review, bookId, reviewdAt})
+        if (!reviewedBy) return res.status(400).send({ status: false, msg: 'please enter reviewedby' });
+        if (typeof reviewedBy != "string") return res.status(400).send({ status: false, msg: 'please enter valid reviewers name' })
 
-//     let newData = {
-//         _id: create._id,
-//         reviewedBy: reviewedBy,
-//         bookId: id,
-//         rating: rating,
-//         reviewedAt: new Date(),
-//         review : review,
+        if (!reviewedAt) return res.status(400).send({ status: false, msg: 'please enter reviewed date' });
+        let validateDate = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/gm
+        if (!validateDate.test(reviewedAt)) {
+            return res.status(400).send({ status: false, message: "reviewed date must be in format  YYYY-MM-DD!!!" })
+        }
 
-//     }
-//     return res.status(200).send({ status: true, message: "Success",data: newData })
-// }
+        if (!rating) return res.status(400).send({ status: false, msg: 'please enter valid rating which is more than 0 and less than or equal to 5' });
 
+        filter = {
+            bookId: bookId,
+            reviewedBy: reviewedBy,
+            reviewedAt: reviewedAt,
+            rating: rating,
+            review: review
+        };
 
-// module.exports.createReviews = createReviews
+        findBook.reviews = findBook.reviews + 1;
+        findBook.save();
+
+        await reviewModel.create(filter);
+
+        let response = await reviewModel.findOne(filter).select({__v:0,updatedAt:0,createdAt:0,isDeleted:0})
+
+        res.status(201).send({ status: true, msg: 'success', data: response })
+    } catch (err) {
+        res.status(500).send({ status: false, message: err.message })
+    }
+}
+
+module.exports.createReview = createReview

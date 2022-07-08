@@ -76,21 +76,21 @@ let getBookById = async (req, res) => {
     try {
         let bookId = req.params.bookId
         //---------[Validations]
-        bookId.isdeleted = false
         if (!mongoose.Types.ObjectId.isValid(bookId)) return res.status(400).send({ status: false, message: 'Invalid UserId Format' })
 
         //---------[Checking Book is Present in Db or not]
-        let checkBook = await bookModel.findById(bookId)
+        let checkBook = await bookModel.findOne({_id:bookId, isDeleted:false})
         if (!checkBook) return res.status(404).send({ status: false, message: "Book Not Found" });
 
         //........(Check Reviews)
-        let reviewsData = await reviewModel.find({ _id: bookId, isdeleted: false })
+        let reviewsData = await reviewModel.find({ _id: bookId, isDeleted: false })
 
         //---------[Destructuring]
         let { _id, title, category, subcategory, excerpt, reviews, updatedAt, createdAt, releasedAt, isDeleted, } = checkBook
 
         //---------[Send response]
         let data = { _id, title, category, subcategory, excerpt, reviews, updatedAt, createdAt, releasedAt, isDeleted, reviewsData }
+
         return res.status(200).send({ status: true, message: 'Book list', data: data })
     }
     catch (err) {
@@ -106,11 +106,10 @@ let updateBook = async (req, res) => {
         let data = req.body
         
         //---------[Validations]
-        bookId.isdeleted = false
         if (!mongoose.Types.ObjectId.isValid(bookId)) return res.status(400).send({ status: false, message: 'Invalid UserId Format' })
         if (Object.keys(data).length === 0) return res.status(400).send({ status: false, message: "Please Provide data to Update a book." })
         //---------[Check Book is Present in Db or not]
-        let checkBook = await bookModel.findById(bookId)
+        let checkBook = await bookModel.findOne({_id:bookId, isDeleted:false})
         if (!checkBook) return res.status(404).send({ status: false, message: "Book Not Found" });
 
         //---------[Authorisation]
@@ -161,13 +160,11 @@ let deleteBook = async (req, res) => {
     try {
         let bookId = req.params.bookId
         //---------[Validations]
-        bookId.isdeleted = false
         if (!mongoose.Types.ObjectId.isValid(bookId)) return res.status(400).send({ status: false, message: 'Invalid UserId Format' })
 
         //---------[Check Book is Present in Db or not]
-        let checkBook = await bookModel.findById(bookId);
+        let checkBook = await bookModel.findOne({_id:bookId,isDeleted:false});
         if (!checkBook) return res.status(404).send({ status: false, msg: "Book Not Found" });
-        if (checkBook.isDeleted == true) return res.status(404).send({ status: false, message: 'Book Not Found' })
 
         //---------[Authorisation]
         const token = req.userId

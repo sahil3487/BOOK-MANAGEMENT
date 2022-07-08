@@ -44,15 +44,31 @@ const createUser = async (req, res) => {
 
                 return res.status(400).send({ status: false, message: "address should be of type object and if address is given it should not be empty" })
             }
+
+            let street = address.street
+            let city = address.city
             let pincode = address.pincode
+            if(!pincode) return res.send({msg:false})
+            console.log(street, city, pincode)
+            if (street) {
+                let validateStreet = /^[a-zA-Z0-9]/
+                if (!validateStreet.test(street)) {
+                    return res.status(400).send({ status: false, message: "enter valid street name" })
+                }
+            }
+
+            if (city) {
+                let validateCity = /^[a-zA-z',.\s-]{1,25}$/gm
+                if (!validateCity.test(city)) {
+                    return res.status(400).send({ status: false, message: "enter valid city name" })
+                }
+            }
 
             if (pincode) {
-                if(typeof pincode == null) return false
-
-                // let validatePincode = /^[1-9]{1}[0-9]{2}\s{0,1}[0-9]{3}$/gm  //must not start with 0,6 digits and spces
-                // if (!validatePincode.test(pincode)) {
-                //     return res.status(400).send({ status: false, message: "enter valid pincode" })
-                // }
+                let validatePincode = /^[1-9]{1}[0-9]{2}\s{0,1}[0-9]{3}$/gm  //must not start with 0,6 digits and spaces
+                if (!validatePincode.test(pincode)) {
+                    return res.status(400).send({ status: false, message: "enter valid pincode" })
+                }
             }
         }
 
