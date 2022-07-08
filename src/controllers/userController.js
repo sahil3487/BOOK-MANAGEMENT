@@ -1,12 +1,19 @@
 //=================[Imports]==============
 
 const userModel = require('../models/userModel')
+
 const jwt = require("jsonwebtoken")
-const { response } = require('express')
 
 //=================[Validation Function]==============
+
 const isvalid = function (title) {
     return ["Mr", "Mrs", "Miss"].indexOf(title) === -1
+}
+
+const isValidvalue = function (value) {
+    if (typeof value === 'undefined' || value === null) return false
+    if (typeof value === 'string' && value.trim().length === 0) return false
+    return true;
 }
 
 
@@ -15,29 +22,41 @@ const isvalid = function (title) {
 const createUser = async (req, res) => {
     try {
         let body = req.body
+
         if (Object.keys(body).length === 0) return res.status(400).send({ status: false, message: "Please Provide data to create a new user." })
+
         let { name, email, phone, password, title, address } = body
 
         //---------[Required fields]
         if (!title) return res.status(400).send({ status: false, message: "title is required" })
+
         if (!name) return res.status(400).send({ status: false, message: "Name is required" })
+
         if (!email) return res.status(400).send({ status: false, message: "email is required" })
+
         if (!phone) return res.status(400).send({ status: false, message: "Phone is required" })
+
         if (!password) return res.status(400).send({ status: false, message: "password is required" })
 
         //----------[Check Validations]
+
         if (isvalid(title)) return res.status(400).send({ status: false, message: "title must be Mr , Miss , Mrs" })
+
         //---(Name)
         if (typeof name !== "string") return res.status(400).send({ status: false, message: "Name is Invalid" })
         if (!(/^[A-Za-z_ ]+$/.test(name))) return res.status(400).send({ status: false, message: "Name is Invalid" })
+
         //---(Phone)
         if (!(/^[6-9]\d{9}$/.test(phone))) return res.status(400).send({ status: false, message: "Phone Number Is Invalid" })
+
         //---(Email)
         if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) return res.status(400).send({ status: false, message: `Email should be a valid email address` });
+
         //---(Password)
         if (!(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$/.test(password))) {
             return res.status(400).send({ status: false, message: `password shoud be 8 to 15 characters which contain at least one numeric digit, one uppercase and one lowercase letter` })
         }
+
         //---(Address)
         if (address) {
             if (typeof address !== 'object' || Array.isArray(address) || Object.keys(address).length == 0) {
@@ -48,24 +67,24 @@ const createUser = async (req, res) => {
             let city = address.city
             let pincode = address.pincode
 
-            if (!street) return res.send({ status: false, msg: 'please enter street' })
-            if (street) {
+            if ("street" in req.body.address) {
+                if (!isValidvalue(street)) return res.send({ status: false, msg: 'please enter street' })
                 let validateStreet = /^[a-zA-Z0-9]/
                 if (!validateStreet.test(street)) {
                     return res.status(400).send({ status: false, message: "enter valid street name" })
                 }
             }
             
-            if (!city) return res.send({ status: false, msg: 'please enter city' })
-            if (city) {
+            if ("city" in req.body.address) {
+                if (!isValidvalue(city)) return res.send({ status: false, msg: 'please enter street' })
                 let validateCity = /^[a-zA-z',.\s-]{1,25}$/gm
                 if (!validateCity.test(city)) {
                     return res.status(400).send({ status: false, message: "enter valid city name" })
                 }
             }
             
-            if (!pincode) return res.send({ status: false, msg: 'please enter pincode' })
-            if (pincode) {
+            if ("pincode" in req.body.address) {
+                if (!isValidvalue(pincode)) return res.send({ status: false, msg: 'please enter street' })
                 let validatePincode = /^[1-9]{1}[0-9]{2}\s{0,1}[0-9]{3}$/gm  //must not start with 0,6 digits and spaces
                 if (!validatePincode.test(pincode)) {
                     return res.status(400).send({ status: false, message: "enter valid pincode" })
@@ -99,15 +118,21 @@ const createUser = async (req, res) => {
 const loginUser = async function (req, res) {
     try {
         let body = req.body
+
         if (Object.keys(body).length === 0) return res.status(400).send({ status: false, msg: "please provide body to login" })
+
         let { email, password } = body
 
         //---------[Required fields]
+
         if (!email) return res.status(400).send({ status: false, msg: "email is required" })
+
         if (!password) return res.status(400).send({ status: false, msg: "password is required" })
 
         //---------[Validation]
+
         if (!(/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(email))) return res.status(400).send({ status: false, msg: "email Id is invalid" })
+
         let Email = await userModel.findOne({ email })
         if (!Email) return res.status(400).send({ status: false, msg: "email is not correct" })
 
@@ -123,7 +148,9 @@ const loginUser = async function (req, res) {
             },
             "project-3"
         )
+
         res.setHeader("x-api-key", token);
+        
         res.status(200).send({ status: true, message: "Success", data: { token: token } });
     } catch (err) {
         res.status(500).send({ status: false, message: err.message });
