@@ -83,7 +83,10 @@ const createUser = async (req, res) => {
         //----------[create]
 
         const savedData = await userModel.create(body)
-        res.status(201).send({ status: true, message: "Success", data: savedData })
+
+        const response = await userModel.findOne({_id:savedData._id}).select({__v:0})
+
+        res.status(201).send({ status: true, message: "Success", data: response })
 
     } catch (err) {
         res.status(500).send({ status: false, message: err.message })
