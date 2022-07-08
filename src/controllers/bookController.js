@@ -41,8 +41,8 @@ const createBook = async (req, res) => {
         }
 
         //----------[Authorisation]
-        // const token = req.userId
-        // if (token !== userId) res.status(403).send({ status: false, msg: "you cannot create other users books please provide your user ID" });
+        const token = req.userId
+        if (token !== userId) res.status(403).send({ status: false, msg: "you cannot create other users books please provide your user ID" });
 
         let book = await bookModel.create(body)
         return res.status(201).send({ status: true, message: "Success", data: book })
