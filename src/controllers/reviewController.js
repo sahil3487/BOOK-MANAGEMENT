@@ -1,32 +1,36 @@
+// =================================[ Imports]=================================
 const mongoose = require('mongoose')
 const bookModel = require("../models/bookModel");
 const reviewModel = require("../models/reviewModel");
 
-
+// =================================[ Create Reviews]=================================
 let createReview = async (req, res) => {
     try {
         let data = req.body;
-        if (Object.keys(data).length == 0) return res.status(400).send({ status: false, msg: 'please eneter data to create review' })
-
         let bookId = req.params.bookId;
+        
+        if (Object.keys(data).length == 0) return res.status(400).send({ status: false, msg: 'please eneter data to create review' })
         if (!mongoose.Types.ObjectId.isValid(bookId)) return res.status(400).send({ status: false, msg: 'please enter the bookId' });
-
+        //-------(Find Book)
         let findBook = await bookModel.findOne({ _id: bookId, isDeleted: false });
         if (!findBook) return res.status(404).send({ status: false, msg: 'bookId does not exists' })
-
+        //-------(Destructuring)
         let { rating, review } = data;
-
         let reviewedBy = data["reviewer's name"]
 
+        //=======================(Validations)================
+
+        //----(ReviewedBY)
         if (!reviewedBy) return res.status(400).send({ status: false, msg: "please enter reviewer's name" });
-        if (typeof reviewedBy != "string") return res.status(400).send({ status: false, msg: 'please enter valid reviewers name' })
-
-        let reviewedAt= Date.now();
-
+        if (typeof reviewedBy != "string") return res.status(400).send({ status: false, msg: 'please enter valid reviewers name' }) 
+        //----(Rating)
         if(!rating) return res.status(400).send({status: false, msg: 'ratings required and value should not be zero'})
         if(typeof rating!='number') return res.status(400).send({status: false, msg:'please enter a number'})
         if (!(rating<=5)) return res.status(400).send({ status: false, msg: 'please enter valid rating which is more than 0 and less than or equal to 5' });
-
+        
+        //------(Set Review Date)
+        let reviewedAt= Date.now();
+       
         filter = {
             bookId: bookId,
             reviewedBy: reviewedBy,
@@ -35,20 +39,23 @@ let createReview = async (req, res) => {
             review: review
         };
 
+        //---------(Updating Reviews Count)
         findBook.reviews = findBook.reviews + 1;
         findBook.save();
 
+        // --------(Creating Reviews)
         let saveData = await reviewModel.create(filter);
-
         let response = await reviewModel.findById(saveData._id).select({__v:0,updatedAt:0,createdAt:0,isDeleted:0})
 
+        //---------(Response)
         res.status(201).send({ status: true, msg: 'success', data: response })
+
     } catch (err) {
         res.status(500).send({ status: false, message: err.message })
     }
 }
 
-
+// =================================[ Update Reviews]=================================
 const updateReview = async (req, res) => {
     try {
         let body = req.body;
@@ -95,7 +102,7 @@ const updateReview = async (req, res) => {
 
 }
 
-
+// =================================[ Delete Reviews]=================================
 let deleteReview = async (req, res) => {
     try {
         let bookId = req.params.bookId;
@@ -122,6 +129,7 @@ let deleteReview = async (req, res) => {
     }
 }
 
+// =================================[ Exports ]=================================
 module.exports.deleteReview = deleteReview
 module.exports.updateReview = updateReview
 module.exports.createReview = createReview

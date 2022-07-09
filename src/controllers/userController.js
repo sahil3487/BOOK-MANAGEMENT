@@ -10,7 +10,7 @@ const isvalid = function (title) {
 }
 
 
-// ==+==+==+==+===+==+==+==[ Create User ]==+==+==+==+===+==+==+==+=
+// ====================================[ Create User ]=================================
 
 const createUser = async (req, res) => {
     try {
@@ -27,18 +27,22 @@ const createUser = async (req, res) => {
 
         //----------[Check Validations]
         if (isvalid(title)) return res.status(400).send({ status: false, message: "title must be Mr , Miss , Mrs" })
+
         //---(Name)
         if (typeof name !== "string") return res.status(400).send({ status: false, message: "Name is Invalid" })
         if (!(/^[A-Za-z_ ]+$/.test(name))) return res.status(400).send({ status: false, message: "Name is Invalid" })
-        //---(Phone)
+
+        //----(Phone)
         if (!(/^[6-9]\d{9}$/.test(phone))) return res.status(400).send({ status: false, message: "Phone Number Is Invalid" })
-        //---(Email)
+
+        //----(Email)
         if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) return res.status(400).send({ status: false, message: `Email should be a valid email address` });
-        //---(Password)
+        
+        //----(Password)
         if (!(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$/.test(password))) {
             return res.status(400).send({ status: false, message: `password shoud be 8 to 15 characters which contain at least one numeric digit, one uppercase and one lowercase letter` })
         }
-        //---(Address)
+        //----(Address)
         if (address) {
             if (typeof address !== 'object' || Array.isArray(address) || Object.keys(address).length == 0) {
                 return res.status(400).send({ status: false, message: "address should be of type object and if address is given it should not be empty" })
@@ -83,7 +87,6 @@ const createUser = async (req, res) => {
         //----------[create]
 
         const savedData = await userModel.create(body)
-
         const response = await userModel.findOne({_id:savedData._id}).select({__v:0})
 
         res.status(201).send({ status: true, message: "Success", data: response })
@@ -94,7 +97,7 @@ const createUser = async (req, res) => {
 }
 
 
-// ==+==+==+==+===+==+==+==[ Login User ]==+==+==+==+===+==+==+==+=
+// =================================[ Login User ]=================================
 
 const loginUser = async function (req, res) {
     try {
@@ -130,9 +133,7 @@ const loginUser = async function (req, res) {
     }
 };
 
-
-
-
+// =================================[ Exports ]=================================
 
 module.exports.createUser = createUser
 module.exports.loginUser = loginUser

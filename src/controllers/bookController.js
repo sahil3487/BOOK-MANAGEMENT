@@ -1,11 +1,11 @@
-// ==+==+==+==+===+==+==+==[ Imports ]==+==+==+==+===+==+==+==+=
+// =================================[ Imports ]=================================
 const userModel = require('../models/userModel')
 const bookModel = require('../models/bookModel')
 const reviewModel = require('../models/reviewModel')
 const { default: mongoose } = require('mongoose')
 
 
-// ==+==+==+==+===+==+==+==[ Create Book ]==+==+==+==+===+==+==+==+=
+// =================================[ Create Book]=================================
 const createBook = async (req, res) => {
     try {
         let body = req.body
@@ -52,7 +52,7 @@ const createBook = async (req, res) => {
 }
 
 
-// ==+==+==+==+===+==+==+==[ Get Books ]==+==+==+==+===+==+==+==+=
+// =================================[ Get Books ]=================================
 let getBook = async (req, res) => {
     try {
         let filterBook = req.query
@@ -71,7 +71,7 @@ let getBook = async (req, res) => {
     }
 }
 
-// ==+==+==+==+===+==+==+==[ Get Book By Id ]==+==+==+==+===+==+==+==+=
+// =================================[ Get Book By Id ]=================================
 let getBookById = async (req, res) => {
     try {
         let bookId = req.params.bookId
@@ -99,7 +99,7 @@ let getBookById = async (req, res) => {
 }
 
 
-// ==+==+==+==+===+==+==+==[ Update Books ]==+==+==+==+===+==+==+==+=
+// =================================[ Update Books ]=================================
 let updateBook = async (req, res) => {
     try {
         let bookId = req.params.bookId
@@ -155,7 +155,7 @@ let updateBook = async (req, res) => {
 }
 
 
-// ==+==+==+==+===+==+==+==[ Delete Books ]==+==+==+==+===+==+==+==+=
+// =================================[ Delete Books ]=================================
 let deleteBook = async (req, res) => {
     try {
         let bookId = req.params.bookId
@@ -185,7 +185,7 @@ let deleteBook = async (req, res) => {
 };
 
 
-// ==+==+==+==+===+==+==+==[ Exports ]==+==+==+==+===+==+==+==+=
+// =================================[ Exports ]=================================
 
 module.exports.createBook = createBook
 module.exports.getBook = getBook
