@@ -11,18 +11,21 @@ const authenticate = async (req, res, next) => {
         //-----(Decoding Token)
         let decodedToken = jwt.verify(token, "project-3", (err, decoded) => {
             if (err) {
-                res.status(401).send({ status: false, message: err.message })
-            } else {
+                return res.status(401).send({ status: false, message: err.message })
+            } 
+            else {
                 return decoded
             }
         })
+
         //----(Set Id In Request)
         req["userId"] = decodedToken.userId
 
+        next()
+
     } catch (err) {
-        res.status(500).send({ status: false, message: err.message });
+        return res.status(500).send({ status: false, message: err.message });
     }
-    next()
 }
 
 module.exports.authenticate = authenticate;

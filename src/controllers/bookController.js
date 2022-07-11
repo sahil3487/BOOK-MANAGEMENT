@@ -29,31 +29,45 @@ let createBook = async (req, res) => {
         if (!releasedAt) return res.status(400).send({ status: false, message: "releasedAt is required" })
 
         //-------------[Validations for Unique fields]
+
         //------(Check Title)
         let checkTitle = await bookModel.findOne({ title })
         if (checkTitle) return res.status(400).send({ status: false, message: "Title is already used" })
         if (!(/^[A-Za-z_ ]+$/.test(title))) return res.status(400).send({ status: false, message: "Please enter valid title" })
+
         //------(Check UserId)
+        if (!mongoose.Types.ObjectId.isValid(userId)) return res.status(400).send({ status: false, message: "Invalid UserId" })
         let checkUserid = await userModel.findById(userId)
-        if (!mongoose.Types.ObjectId.isValid(checkUserid)) return res.status(400).send({ status: false, message: "Invalid UserId" })
         if (!checkUserid) return res.status(404).send({ status: false, message: "userId not found" })
+
         //------(Check ISBN)
         if (!(/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/.test(ISBN))) return res.status(400).send({ status: false, message: "Invalid ISBN Number" })
         let checkISBN = await bookModel.findOne({ ISBN })
         if (checkISBN) return res.status(400).send({ status: false, message: "ISBN is already used" })
+
         //------(Check Date)
-        let validateDate = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/gm
+        let validateDate = /^([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))$/gm
         if (!validateDate.test(releasedAt)) {
             return res.status(400).send({ status: false, message: "date must be in format  YYYY-MM-DD!!!" })
         }
 
+        //------(Check Review)
+        if("reviews" in req.body) {
+            if(typeof reviews != "number") return res.status(400).send({ status: false, message: "reviews should be of type number" })
+            if(!(reviews >= 0)) return res.status(400).send({ status: false, message: "reviews should not be minus" })
+        }
+
         //----------[Authorisation]
         const token = req.userId
-        if (token !== body.userId.toString()) res.status(403).send({ status: false, message: "you cannot create other users books please provide your user ID" });
+        if (token !== body.userId.toString()) return res.status(403).send({ status: false, message: "you cannot create other users books please provide your user ID" });
+
         //------(Create Book)
         let book = await bookModel.create(body) 
+
+        const response = await bookModel.findOne({_id:book._id}).select({__v:0})
+
         //------(Response)
-        return res.status(201).send({ status: true, message: "Success", data: book })
+        res.status(201).send({ status: true, message: "Success", data: response })
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
@@ -81,12 +95,13 @@ let getBook = async (req, res) => {
         if (Object.keys(data).length == 0) return res.status(404).send({ status: false, message: 'Book not found' })
         
         //---------[Response Send]
-        return res.status(200).send({ status: true, message: 'Book list', data: data })
+        res.status(200).send({ status: true, message: 'Book list', data: data })
     }
     catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
 }
+
 
 // =================================[ Get Book By Id ]=================================
 let getBookById = async (req, res) => {
@@ -108,8 +123,9 @@ let getBookById = async (req, res) => {
 
         //---------[Create response]
         let data = { _id, title, category, subcategory, excerpt, reviews, updatedAt, createdAt, releasedAt, isDeleted, reviewsData }
+        
         //---------[Send Response]
-        return res.status(200).send({ status: true, message: 'Book list', data: data })
+        res.status(200).send({ status: true, message: 'Book list', data: data })
     }
     catch (err) {
         return res.status(500).send({ status: false, message: err.message })

@@ -34,16 +34,17 @@ const bookSchema = new mongoose.Schema({
     subcategory: {
         type: [String],
         required: 'SubCategory is Required',
-        trim:true
+        trim:true,
+        newset: true,
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false,
     },
     reviews: {
         type: Number,
         default: 0,
         trim:true
-    },
-    isDeleted: {
-        type: Boolean,
-        default: false,
     },
     deletedAt: Date,
     releasedAt: {

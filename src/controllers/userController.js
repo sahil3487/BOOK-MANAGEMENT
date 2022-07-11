@@ -96,7 +96,9 @@ let createUser = async (req, res) => {
 
         //----------[create]
         const savedData = await userModel.create(body)
+        
         const response = await userModel.findOne({_id:savedData._id}).select({__v:0})
+
         //---------[Response]
         res.status(201).send({ status: true, message: "Success", data: response })
     } catch (err) {
