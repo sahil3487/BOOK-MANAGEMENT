@@ -68,23 +68,23 @@ const createUser = async (req, res) => {
             let pincode = address.pincode
 
             if ("street" in req.body.address) {
-                if (!isValidvalue(street)) return res.send({ status: false, msg: 'please enter street' })
+                if (!isValidvalue(street)) return res.send({ status: false, messsage: 'please enter street' })
                 let validateStreet = /^[a-zA-Z0-9]/
                 if (!validateStreet.test(street)) {
                     return res.status(400).send({ status: false, message: "enter valid street name" })
                 }
             }
-            
+
             if ("city" in req.body.address) {
-                if (!isValidvalue(city)) return res.send({ status: false, msg: 'please enter street' })
+                if (!isValidvalue(city)) return res.send({ status: false, messsage: 'please enter street' })
                 let validateCity = /^[a-zA-z',.\s-]{1,25}$/gm
                 if (!validateCity.test(city)) {
                     return res.status(400).send({ status: false, message: "enter valid city name" })
                 }
             }
-            
+
             if ("pincode" in req.body.address) {
-                if (!isValidvalue(pincode)) return res.send({ status: false, msg: 'please enter street' })
+                if (!isValidvalue(pincode)) return res.send({ status: false, messsage: 'please enter street' })
                 let validatePincode = /^[1-9]{1}[0-9]{2}\s{0,1}[0-9]{3}$/gm  //must not start with 0,6 digits and spaces
                 if (!validatePincode.test(pincode)) {
                     return res.status(400).send({ status: false, message: "enter valid pincode" })
@@ -103,7 +103,7 @@ const createUser = async (req, res) => {
 
         const savedData = await userModel.create(body)
 
-        const response = await userModel.findOne({_id:savedData._id}).select({__v:0})
+        const response = await userModel.findOne({ _id: savedData._id }).select({ __v: 0 })
 
         res.status(201).send({ status: true, message: "Success", data: response })
 
@@ -119,25 +119,25 @@ const loginUser = async function (req, res) {
     try {
         let body = req.body
 
-        if (Object.keys(body).length === 0) return res.status(400).send({ status: false, msg: "please provide body to login" })
+        if (Object.keys(body).length === 0) return res.status(400).send({ status: false, messsage: "please provide body to login" })
 
         let { email, password } = body
 
         //---------[Required fields]
 
-        if (!email) return res.status(400).send({ status: false, msg: "email is required" })
+        if (!email) return res.status(400).send({ status: false, messsage: "email is required" })
 
-        if (!password) return res.status(400).send({ status: false, msg: "password is required" })
+        if (!password) return res.status(400).send({ status: false, messsage: "password is required" })
 
         //---------[Validation]
 
-        if (!(/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(email))) return res.status(400).send({ status: false, msg: "email Id is invalid" })
+        if (!(/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(email))) return res.status(400).send({ status: false, messsage: "email Id is invalid" })
 
         let Email = await userModel.findOne({ email })
-        if (!Email) return res.status(400).send({ status: false, msg: "email is not correct" })
+        if (!Email) return res.status(400).send({ status: false, messsage: "email is not correct" })
 
         let user = await userModel.findOne({ email: email, password: password })
-        if (!user) return res.status(400).send({ status: false, msg: "password is not corerct" });
+        if (!user) return res.status(400).send({ status: false, messsage: "password is not corerct" });
 
         // ---------[Create Token JWT]-------------
         let token = jwt.sign(
@@ -150,7 +150,7 @@ const loginUser = async function (req, res) {
         )
 
         res.setHeader("x-api-key", token);
-        
+
         res.status(200).send({ status: true, message: "Success", data: { token: token } });
     } catch (err) {
         res.status(500).send({ status: false, message: err.message });
