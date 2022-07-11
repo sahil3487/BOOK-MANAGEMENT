@@ -35,14 +35,14 @@ let createReview = async (req, res) => {
             review: review
         };
 
+        let saveData = await reviewModel.create(filter);
+        
         findBook.reviews = findBook.reviews + 1;
         findBook.save();
 
-        let saveData = await reviewModel.create(filter);
-
         let response = await reviewModel.findById(saveData._id).select({__v:0,updatedAt:0,createdAt:0,isDeleted:0})
 
-        res.status(201).send({ status: true, msg: 'success', data: response })
+        res.status(201).send({ status: true, msg: 'Success', data: response })
     } catch (err) {
         res.status(500).send({ status: false, message: err.message })
     }
