@@ -4,12 +4,18 @@ const bookModel = require('../models/bookModel')
 const reviewModel = require('../models/reviewModel')
 const { default: mongoose } = require('mongoose')
 
+//----(Value Validation)
+const isValidvalue = function (value) {
+    if (typeof value === 'undefined' || value === null) return false
+    if (typeof value === 'string' && value.trim().length === 0) return false
+    return true;
+}
 
 //=================================[ Create Book]=================================
 let createBook = async (req, res) => {
     try {
         let body = req.body
-        
+
         if (Object.keys(body).length === 0) return res.status(400).send({ status: false, message: "Please Provide data to create a new book." })
 
         let { title, excerpt, userId, ISBN, category, subcategory, reviews, releasedAt } = body
@@ -90,6 +96,13 @@ let getBook = async (req, res) => {
     try {
         let filterBook = req.query
         filterBook.isdeleted = false
+
+        //---------[If query is not given]
+
+        if(!filterBook){
+            data = await bookModel.find().select({ title: 1, excerpt: 1, category: 1, releasedAt: 1, userId: 1, reviews: 1 }).sort({ title: 1 })
+            return res.status(200).send({ status: true, message: 'Book list', data: data })
+        }
 
         //---------[Validation]
 
@@ -198,7 +211,8 @@ let updateBook = async (req, res) => {
 
         //.....(Change Excerpt)
 
-        if (data.excerpt) {
+        if ("excerpt" in data) {
+            if(!isValidvalue(data.excerpt)) return res.status(400).send({ status: false, message: "Invalid excerpt" })
             checkBook.excerpt = data.excerpt
         }
 

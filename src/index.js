@@ -19,10 +19,6 @@ mongoose
   .then(() => console.log("MongoDb is connected "))
   .catch((err) => console.log(err.message));
 
-app.all('/**', (req, res) => {
-  res.status(404).send({ status: false, message: 'Page Not Found!' });
-});
-
 app.use("/", route);
 
 app.listen(process.env.PORT || 3000, function () {

@@ -11,7 +11,7 @@ const authenticate = async (req, res, next) => {
         //-----(Decoding Token)
         let decodedToken = jwt.verify(token, "project-3", (err, decoded) => {
             if (err) {
-                return res.status(401).send({ status: false, message: err.message })
+                res.status(401).send({ status: false, message: err.message })
             } 
             else {
                 return decoded
