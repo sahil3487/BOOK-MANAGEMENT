@@ -55,6 +55,9 @@ let createReview = async (req, res) => {
         let saveData = await reviewModel.create(filter);
         let response = await reviewModel.findById(saveData._id).select({ __v: 0, updatedAt: 0, createdAt: 0, isDeleted: 0 })
 
+        let { _id, title, category, subcategory, excerpt, reviews, updatedAt, createdAt, releasedAt, isDeleted, } = findBook
+        let bookData = { _id, title, category, subcategory, excerpt, reviews, updatedAt, createdAt, releasedAt, isDeleted, reviewsData:response }
+
         //---------(Updating Reviews Count)
 
         findBook.reviews = findBook.reviews + 1;
@@ -62,7 +65,7 @@ let createReview = async (req, res) => {
 
         //---------(Response)
         
-        res.status(201).send({ status: true, message: 'success', data: response })
+        res.status(201).send({ status: true, message: 'success', data: bookData })
 
     } catch (err) {
         res.status(500).send({ status: false, message: err.message })
@@ -114,11 +117,15 @@ let updateReview = async (req, res) => {
 
         //-------(Find Review)
 
-        let reviewsData = await reviewModel.findOne({ _id: reviewId, isDeleted: false }).select({ __v: 0, isDeleted: 0 })
+        let reviewsData = await reviewModel.find({ _id: reviewId, isDeleted: false }).select({ __v: 0, isDeleted: 0 })
+
+
+        let { _id, title, category, subcategory, excerpt, reviews, updatedAt, createdAt, releasedAt, isDeleted, } = findBook
+        let bookData = { _id, title, category, subcategory, excerpt, reviews, updatedAt, createdAt, releasedAt, isDeleted, reviewsData }
 
         //-------(Send Response)
 
-        res.status(200).send({ status: true, message: 'Book list', data: reviewsData })
+        res.status(200).send({ status: true, message: 'Book list', data: bookData })
 
     } catch (err) {
         res.status(500).send({ status: false, message: err.message })

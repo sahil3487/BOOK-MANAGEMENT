@@ -147,7 +147,7 @@ let getBookById = async (req, res) => {
 
         //---------(Check Reviews)
 
-        let reviewsData = await reviewModel.find({ _id: bookId, isDeleted: false })
+        let reviewsData = await reviewModel.find({ bookId: bookId, isDeleted: false })
 
         //---------[Destructuring]
 
