@@ -5,6 +5,7 @@ const reviewModel = require('../models/reviewModel')
 const { default: mongoose } = require('mongoose')
 
 //----(Value Validation)
+
 const isValidvalue = function (value) {
     if (typeof value === 'undefined' || value === null) return false
     if (typeof value === 'string' && value.trim().length === 0) return false
@@ -110,7 +111,8 @@ let getBook = async (req, res) => {
 
         //---------[Find Book]
 
-        let data = await bookModel.find({$and:[filterBook, {isDeleted: false}]}).select({ title: 1, excerpt: 1, category: 1, releasedAt: 1, userId: 1, reviews: 1 }).sort({ title: 1 })
+        let data = await bookModel.find({$and:[filterBook, {isDeleted:false}]}).select({ title: 1, excerpt: 1, category: 1, releasedAt: 1, userId: 1, reviews: 1 }).sort({ title: 1 })
+
         if (Object.keys(data).length == 0) return res.status(404).send({ status: false, message: 'Book not found' })
         
         //---------[Response Send]
@@ -163,6 +165,7 @@ let getBookById = async (req, res) => {
 let updateBook = async (req, res) => {
     try {
         let bookId = req.params.bookId
+
         let data = req.body
         
         //---------[Validations]
