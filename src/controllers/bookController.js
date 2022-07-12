@@ -95,31 +95,23 @@ let createBook = async (req, res) => {
 // =================================[ Get Books ]=================================
 let getBook = async (req, res) => {
     try {
-        let queryData = req.query
-
-        let filterBook = { isDeleted:false }
+        let filterBook = req.query
 
         //---------[Validation]
 
-        if(queryData.userId){
-            if (!mongoose.Types.ObjectId.isValid(queryData.userId)) return res.status(400).send({ status: false, message: 'Invalid UserId Format' })
+        if(filterBook.userId){
+            if (!mongoose.Types.ObjectId.isValid(filterBook.userId)) return res.status(400).send({ status: false, message: 'Invalid UserId Format' })
         }
 
         //---------[Incase 2 or more subcategory is given]
 
-        if (queryData.subcategory) {
-            queryData.subcategory = { $in: queryData.subcategory.split(',') };
+        if (filterBook.subcategory) {
+            filterBook.subcategory = { $in: filterBook.subcategory.split(',') };
         }
 
         //---------[Find Book]
 
-        filterBook['$or'] = [
-            { userId: queryData.userId },
-            { category: queryData.category },
-            { subcategory: queryData.subcategory }
-        ];
-
-        let data = await bookModel.find(filterBook).select({ title: 1, excerpt: 1, category: 1, releasedAt: 1, userId: 1, reviews: 1 }).sort({ title: 1 })
+        let data = await bookModel.find({$and:[filterBook, {isDeleted:false}]}).select({ title: 1, excerpt: 1, category: 1, releasedAt: 1, userId: 1, reviews: 1 }).sort({ title: 1 })
 
         if (Object.keys(data).length == 0) return res.status(404).send({ status: false, message: 'Book not found' })
         
