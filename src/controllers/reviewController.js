@@ -55,7 +55,7 @@ let createReview = async (req, res) => {
     }
 }
 
-// =================================[ Update Reviews]=================================
+//=================================[ Update Reviews]=================================
 let updateReview = async (req, res) => {
     try {
         let body = req.body;
@@ -70,7 +70,6 @@ let updateReview = async (req, res) => {
         if (!findBook) return res.status(404).send({ status: false, message: 'book not found' })
         //-------(Find Review)
         let findReview = await reviewModel.findOne({ _id: reviewId, bookId: bookId ,isDeleted: false });
-        console.log(findReview);
         if (!findReview) return res.status(404).send({ status: false, message: 'review not found' });
         //-------(Validation for Rating)
         if (body.rating) {
@@ -83,12 +82,12 @@ let updateReview = async (req, res) => {
         let update = {
             review: body.review,  
             rating: body.rating,
-            reviewedBy: body["reviewer's name"],
+            reviewedBy: body["reviewer's name"], 
         }
         await reviewModel.findByIdAndUpdate({ _id: reviewId }, update);
 
         //-------(Find Review)
-        let reviewsData = await reviewModel.findOne({ _id: reviewId, isDeleted: false }).select({ __v: 0, isDeleted: 0 })
+        let reviewsData = await reviewModel.findOne({ _id: bookId,  isDeleted: false }).select({ __v: 0, isDeleted: 0 })
 
         //-------(Send Response)
         res.status(200).send({ status: true, message: 'Book list', data: reviewsData })
@@ -98,7 +97,7 @@ let updateReview = async (req, res) => {
 
 }
 
-//=================================[ Delete Reviews]=================================
+//=================================[ Delete Reviews ]=================================
 let deleteReview = async (req, res) => {
     try {
         let bookId = req.params.bookId;
@@ -124,7 +123,7 @@ let deleteReview = async (req, res) => {
     }
 }
 
-// =================================[ Exports ]=================================
+//=================================[ Exports ]=================================
 module.exports.deleteReview = deleteReview
 module.exports.updateReview = updateReview
 module.exports.createReview = createReview
