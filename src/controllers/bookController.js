@@ -5,6 +5,7 @@ const reviewModel = require('../models/reviewModel')
 const { default: mongoose } = require('mongoose')
 
 //----(Value Validation)
+
 const isValidvalue = function (value) {
     if (typeof value === 'undefined' || value === null) return false
     if (typeof value === 'string' && value.trim().length === 0) return false
@@ -95,14 +96,6 @@ let createBook = async (req, res) => {
 let getBook = async (req, res) => {
     try {
         let filterBook = req.query
-        filterBook.isdeleted = false
-
-        //---------[If query is not given]
-
-        if(!filterBook){
-            data = await bookModel.find().select({ title: 1, excerpt: 1, category: 1, releasedAt: 1, userId: 1, reviews: 1 }).sort({ title: 1 })
-            return res.status(200).send({ status: true, message: 'Book list', data: data })
-        }
 
         //---------[Validation]
 
@@ -118,7 +111,7 @@ let getBook = async (req, res) => {
 
         //---------[Find Book]
 
-        let data = await bookModel.find(filterBook).select({ title: 1, excerpt: 1, category: 1, releasedAt: 1, userId: 1, reviews: 1 }).sort({ title: 1 })
+        let data = await bookModel.find({filterBook, isDeleted:false}).select({ title: 1, excerpt: 1, category: 1, releasedAt: 1, userId: 1, reviews: 1 }).sort({ title: 1 })
         if (Object.keys(data).length == 0) return res.status(404).send({ status: false, message: 'Book not found' })
         
         //---------[Response Send]
@@ -171,6 +164,7 @@ let getBookById = async (req, res) => {
 let updateBook = async (req, res) => {
     try {
         let bookId = req.params.bookId
+
         let data = req.body
         
         //---------[Validations]
