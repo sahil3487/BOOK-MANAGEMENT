@@ -117,7 +117,7 @@ let updateReview = async (req, res) => {
 
         //-------(Find Review)
 
-        let reviewsData = await reviewModel.findOne({ _id: reviewId, isDeleted: false }).select({ __v: 0, isDeleted: 0 })
+        let reviewsData = await reviewModel.find({ _id: reviewId, isDeleted: false }).select({ __v: 0, isDeleted: 0 })
 
 
         let { _id, title, category, subcategory, excerpt, reviews, updatedAt, createdAt, releasedAt, isDeleted, } = findBook
@@ -151,7 +151,7 @@ let deleteReview = async (req, res) => {
 
         //-------(Find Review)
 
-        let findReview = await reviewModel.findOne({_id: reviewId, bookId: bookId, isDeleted: false });
+        let findReview = await reviewModel.find({_id: reviewId, bookId: bookId, isDeleted: false });
         if (!findReview) return res.status(404).send({ status: false, message: 'review not found' });
 
         //-------(Update Review)
