@@ -256,7 +256,7 @@ let deleteBook = async (req, res) => {
 
         await bookModel.findOneAndUpdate(
             { _id: checkBook },
-            { isDeleted: true },
+            { isDeleted: true, deletedAt: Date.now() },
             { new: true }
         );
 

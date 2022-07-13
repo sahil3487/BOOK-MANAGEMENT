@@ -4,6 +4,15 @@ const mongoose = require('mongoose')
 const bookModel = require("../models/bookModel");
 const reviewModel = require("../models/reviewModel");
 
+const isValidvalue = function (value) {
+    if (typeof value === 'undefined' || value === null) return false
+    if (typeof value === 'string' && value.trim().length === 0) return false
+    return true;
+}
+
+
+
+
 // =================================[ Create Reviews]=================================
 
 let createReview = async (req, res) => {
@@ -22,15 +31,15 @@ let createReview = async (req, res) => {
 
         //-------(Destructuring)
 
-        let { rating, review } = data;
-        let reviewedBy = data["reviewer's name"]
+        let { rating, review, reviewedBy } = data;
 
         //=======================(Validations)================
 
         //----(ReviewedBY)
 
-        if (!reviewedBy) return res.status(400).send({ status: false, message: "please enter reviewer's name" });
-        if (typeof reviewedBy != "string") return res.status(400).send({ status: false, message: 'please enter valid reviewers name' })
+        if("reviewedBy" in req.body){
+            if (!isValidvalue(reviewedBy)) return res.status(400).send({ status: false, message: 'please enter valid reviewedBy' })
+        }
 
         //----(Rating)
 
