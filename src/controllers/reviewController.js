@@ -4,6 +4,15 @@ const mongoose = require('mongoose')
 const bookModel = require("../models/bookModel");
 const reviewModel = require("../models/reviewModel");
 
+const isValidvalue = function (value) {
+    if (typeof value === 'undefined' || value === null) return false
+    if (typeof value === 'string' && value.trim().length === 0) return false
+    return true;
+}
+
+
+
+
 // =================================[ Create Reviews]=================================
 
 let createReview = async (req, res) => {
@@ -22,15 +31,25 @@ let createReview = async (req, res) => {
 
         //-------(Destructuring)
 
+<<<<<<< HEAD
         let { rating, review , reviewedBy} = data;
 
+=======
+        let { rating, review, reviewedBy } = data;
+>>>>>>> c5afd3f48663ddb38d51ff52384ce30f07136eb4
 
         //=======================(Validations)================
 
         //----(ReviewedBY)
+<<<<<<< HEAD
         if(reviewedBy){
             if (!reviewedBy) return res.status(400).send({ status: false, message: "please enter reviewer's name" });
             if (typeof reviewedBy != "string") return res.status(400).send({ status: false, message: 'please enter valid reviewers name' })
+=======
+
+        if("reviewedBy" in req.body){
+            if (!isValidvalue(reviewedBy)) return res.status(400).send({ status: false, message: 'please enter valid reviewedBy' })
+>>>>>>> c5afd3f48663ddb38d51ff52384ce30f07136eb4
         }
 
         //----(Rating)
@@ -122,7 +141,7 @@ let updateReview = async (req, res) => {
 
 
         let { _id, title, category, subcategory, excerpt, reviews, updatedAt, createdAt, releasedAt, isDeleted, } = findBook
-        let bookData = { _id, title, category, subcategory, excerpt, reviews, updatedAt, createdAt, releasedAt, isDeleted, reviewsData }
+        let bookData = { _id, title, category, subcategory, excerpt, reviews, updatedAt, createdAt, releasedAt, isDeleted, reviewsData:reviewsData }
 
         //-------(Send Response)
 
@@ -152,7 +171,7 @@ let deleteReview = async (req, res) => {
 
         //-------(Find Review)
 
-        let findReview = await reviewModel.findOne({_id: reviewId, bookId: bookId, isDeleted: false });
+        let findReview = await reviewModel.find({_id: reviewId, bookId: bookId, isDeleted: false });
         if (!findReview) return res.status(404).send({ status: false, message: 'review not found' });
 
         //-------(Update Review)
