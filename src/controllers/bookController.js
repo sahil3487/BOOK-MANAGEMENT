@@ -3,6 +3,7 @@ const userModel = require('../models/userModel')
 const bookModel = require('../models/bookModel')
 const reviewModel = require('../models/reviewModel')
 const { default: mongoose } = require('mongoose')
+const aws= require("../AWS/s3")
 
 //----(Value Validation)
 
@@ -10,16 +11,17 @@ const isValidvalue = function (value) {
     if (typeof value === 'undefined' || value === null) return false
     if (typeof value === 'string' && value.trim().length === 0) return false
     return true;
-}
+} 
 
-//=================================[ Create Book]=================================
+//=================================[ Create Book ]=================================
 let createBook = async (req, res) => {
     try {
         let body = req.body
-
+        
+        
         if (Object.keys(body).length === 0) return res.status(400).send({ status: false, message: "Please Provide data to create a new book." })
 
-        let { title, excerpt, userId, ISBN, category, subcategory, reviews, releasedAt } = body
+        let { title, excerpt, userId, ISBN, category, subcategory, reviews, releasedAt} = body
 
         //---------[Required fields]
 
@@ -43,7 +45,7 @@ let createBook = async (req, res) => {
 
         let checkTitle = await bookModel.findOne({ title })
         if (checkTitle) return res.status(400).send({ status: false, message: "Title is already used" })
-        if (!(/^[A-Za-z_ ]+$/.test(title))) return res.status(400).send({ status: false, message: "Please enter valid title" })
+        if (!isValidvalue(title)) return res.status(400).send({ status: false, message: "Please enter valid title" })
 
         //------(Check UserId)
 
@@ -78,9 +80,15 @@ let createBook = async (req, res) => {
 
         //------(Create Book)
 
-        let book = await bookModel.create(body) 
+        let files= req.files
+        let uploadedFileURL= await aws.uploadFile( files[0] )
+        
+        bookCover = uploadedFileURL
+        let CreateRes = {title, excerpt, userId, ISBN, category, subcategory, reviews, releasedAt ,bookCover}
+        let book = await bookModel.create(CreateRes) 
 
         const response = await bookModel.findOne({_id:book._id}).select({__v:0})
+
 
         //------(Response)
 
@@ -256,7 +264,7 @@ let deleteBook = async (req, res) => {
 
         await bookModel.findOneAndUpdate(
             { _id: checkBook },
-            { isDeleted: true },
+            { isDeleted: true , deletedAt: new Date()},
             { new: true }
         );
 

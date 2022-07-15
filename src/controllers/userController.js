@@ -3,6 +3,7 @@
 const userModel = require('../models/userModel')
 const jwt = require("jsonwebtoken")
 
+
 //=================[Validation Function]==============
 //----(Title Validation)
 const isvalid = function (title) {
@@ -45,7 +46,7 @@ let createUser = async (req, res) => {
         if (!(/^[6-9]\d{9}$/.test(phone))) return res.status(400).send({ status: false, message: "Phone Number Is Invalid" })
 
         //---(Email)
-        if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) return res.status(400).send({ status: false, message: `Email should be a valid email address` });
+        if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) return res.status(400).send({ status: false, message: `Email should be a valid email address` });
 
         //---(Password)
         if (!(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$/.test(password))) {

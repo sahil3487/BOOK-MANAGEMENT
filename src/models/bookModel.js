@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 
 const bookSchema = new mongoose.Schema({
-
+    bookCover: String,
     title: {
         type: String,
         required: 'Book Title Required',
@@ -32,7 +32,7 @@ const bookSchema = new mongoose.Schema({
         trim:true
     },
     subcategory: {
-        type: [String],
+        type: String,
         required: 'SubCategory is Required',
         trim:true,
         newset: true,

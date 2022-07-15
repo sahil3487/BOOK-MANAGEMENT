@@ -22,15 +22,16 @@ let createReview = async (req, res) => {
 
         //-------(Destructuring)
 
-        let { rating, review } = data;
-        let reviewedBy = data["reviewer's name"]
+        let { rating, review , reviewedBy} = data;
+
 
         //=======================(Validations)================
 
         //----(ReviewedBY)
-
-        if (!reviewedBy) return res.status(400).send({ status: false, message: "please enter reviewer's name" });
-        if (typeof reviewedBy != "string") return res.status(400).send({ status: false, message: 'please enter valid reviewers name' })
+        if(reviewedBy){
+            if (!reviewedBy) return res.status(400).send({ status: false, message: "please enter reviewer's name" });
+            if (typeof reviewedBy != "string") return res.status(400).send({ status: false, message: 'please enter valid reviewers name' })
+        }
 
         //----(Rating)
 
@@ -53,15 +54,15 @@ let createReview = async (req, res) => {
         // --------(Creating Reviews)
 
         let saveData = await reviewModel.create(filter);
-        let response = await reviewModel.findById(saveData._id).select({ __v: 0, updatedAt: 0, createdAt: 0, isDeleted: 0 })
-
-        let { _id, title, category, subcategory, excerpt, reviews, updatedAt, createdAt, releasedAt, isDeleted, } = findBook
-        let bookData = { _id, title, category, subcategory, excerpt, reviews, updatedAt, createdAt, releasedAt, isDeleted, reviewsData:response }
-
+        let response = await reviewModel.findById(saveData._id).select({ __v: 0, isDeleted: 0 })
         //---------(Updating Reviews Count)
 
         findBook.reviews = findBook.reviews + 1;
         findBook.save();
+
+        let { _id, title, category, subcategory, excerpt, reviews, updatedAt, createdAt, releasedAt, isDeleted, } = findBook
+        let bookData = { _id, title, category, subcategory, excerpt, reviews, updatedAt, createdAt, releasedAt, isDeleted, reviewsData:response }
+
 
         //---------(Response)
         
@@ -82,7 +83,7 @@ let updateReview = async (req, res) => {
 
         if (Object.keys(body).length == 0) return res.status(400).send({ status: false, message: 'please enter data to update' })
 
-        if (!mongoose.isValidObjectId(bookId)) return res.status(400).send({ status: false, message: 'please enter valid book id' });
+        if (!mongoose.Types.ObjectId.isValid(bookId)) return res.status(400).send({ status: false, message: 'please enter valid book id' });
 
         if (!mongoose.Types.ObjectId.isValid(reviewId)) return res.status(400).send({ status: false, message: 'please enter valid review id' });
 
@@ -111,7 +112,7 @@ let updateReview = async (req, res) => {
         let update = {
             review: body.review,  
             rating: body.rating,
-            reviewedBy: body["reviewer's name"], 
+            reviewedBy: body.reviewedBy, 
         }
         await reviewModel.findByIdAndUpdate({ _id: reviewId }, update);
 
