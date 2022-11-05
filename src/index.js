@@ -8,7 +8,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(multer().any()) 
+app.use(multer().any())
 
 // =============================[Connect DataBase]=========================
 mongoose
@@ -21,7 +21,11 @@ mongoose
   .then(() => console.log("MongoDb is connected "))
   .catch((err) => console.log(err.message));
 
+
+
 app.use("/", route);
+
+
 
 app.listen(process.env.PORT || 3000, function () {
   console.log("Express app is running on port " + (process.env.PORT || 3000));
